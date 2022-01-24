@@ -12,12 +12,13 @@ downTime = 0.01
 
 axisList = []
 class Axis:
-    def __init__(self, low, high, eventCode, axisMax):
+    def __init__(self, low, high, eventCode, axisMax, theshold = 0.01):
         self.low = low
         self.high = high
         self.state = 0
         self.eventCode = eventCode
         self.axisMax = axisMax
+        self.theshold = theshold
 
         axisList.append(self)
 
@@ -34,22 +35,43 @@ def axisThread(axis):
     while True:
         if analogEnabled:
             percent = abs(axis.state / axis.axisMax)
-            print(percent)
+            # print(percent)
+            print(" ")
             interval = (1 - percent) * intervalLength + downTime
-            if percent > epsilon:
+            if percent > axis.theshold:
                 press(axis.key(), interval = interval, _pause = False)
+                # press(axis.key(), interval = interval, _pause = True)
 
+# Kody
+# xAxis = Axis("num4", "num6", "ABS_RX", 32768)
+# yAxis = Axis("num5", "num8", "ABS_RY", 32768)
+# zAxis = Axis("0", "q", "ABS_Y", 32768)
+# # zAxis = Axis("0", "q", "ABS_Y", 32768)
+# zAxis = Axis("0", "num7", "ABS_Z", 255)
+# zAxis = Axis("0", "num9", "ABS_RZ", 255)
+# buttonMap = {
+#     "BTN_TR": "e",
+#     "BTN_TL": "w",
+#     "BTN_SELECT": "space",
+#     "BTN_NORTH": "1",
+#     "BTN_SOUTH": "2",
+#     "BTN_WEST": "r"
+#     # "BTN_EAST": "2",
+# }
+
+# Kaden
 xAxis = Axis("num4", "num6", "ABS_RX", 32768)
 yAxis = Axis("num8", "num5", "ABS_RY", 32768)
 zAxis = Axis("s", "w", "ABS_Y", 32768)
-
+rzAxis = Axis("0", "e", "ABS_RZ", 255)
 buttonMap = {
     "BTN_TR": "e",
     "BTN_TL": "w",
     "BTN_SELECT": "space",
     "BTN_NORTH": "1",
-    "BTN_SOUTH": "2"
+    "BTN_SOUTH": "2",
 }
+
 
 while True:
     events = inputs.get_gamepad()
@@ -60,6 +82,7 @@ while True:
         # code = event.code
         # if code.startswith("ABS"):
         #     print(event.code + ": " + str(event.state))
+        # print(code)
 
         if event.code == "BTN_START" and event.state == 1:
             analogEnabled = not analogEnabled
